@@ -54,6 +54,8 @@ vector<QString> MainWindow::funcbreaker()
             arr[j] = '\0';
             QString temp(arr);
             partfuncs.push_back(temp);
+            partfuncs.push_back(input[i]);
+
             j=-1;
         }
 
