@@ -13,9 +13,12 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+    double Xpoints[7];
+    double Ypoints[7];
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();;
     std::vector<QString> funcbreaker();
+    void forwarddiff();
 
 
 private slots:
