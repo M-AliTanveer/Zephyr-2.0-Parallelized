@@ -27,7 +27,7 @@
      <attribute name="title">
       <string>Tab 2</string>
      </attribute>
-     <widget class="QLineEdit" name="Ch4x0input_2">
+     <widget class="QLineEdit" name="Ch4x0input">
       <property name="geometry">
        <rect>
         <x>30</x>
@@ -36,11 +36,16 @@
         <height>20</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
       <property name="text">
        <string>0</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="Chp4FuncInput_2">
+     <widget class="QLineEdit" name="Chp4FuncInput">
       <property name="geometry">
        <rect>
         <x>320</x>
@@ -49,11 +54,16 @@
         <height>31</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
       <property name="text">
        <string>Example: 2x - 5x^2 = 0</string>
       </property>
      </widget>
-     <widget class="QLabel" name="Chapter4Heading_2">
+     <widget class="QLabel" name="Chapter4Heading">
       <property name="geometry">
        <rect>
         <x>230</x>
@@ -89,7 +99,7 @@
        <bool>false</bool>
       </property>
      </widget>
-     <widget class="QLabel" name="Ch4YValLabel_2">
+     <widget class="QLabel" name="Ch4YValLabel">
       <property name="geometry">
        <rect>
         <x>20</x>
@@ -109,7 +119,7 @@
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter the Values of Y:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="Ch4x2input_2">
+     <widget class="QLineEdit" name="Ch4x2input">
       <property name="geometry">
        <rect>
         <x>290</x>
@@ -118,11 +128,16 @@
         <height>20</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
       <property name="text">
        <string>0</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="Ch4y4input_2">
+     <widget class="QLineEdit" name="Ch4y4input">
       <property name="geometry">
        <rect>
         <x>550</x>
@@ -131,11 +146,16 @@
         <height>20</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
       <property name="text">
        <string>0</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="Ch4y3input_2">
+     <widget class="QLineEdit" name="Ch4y3input">
       <property name="geometry">
        <rect>
         <x>420</x>
@@ -144,11 +164,16 @@
         <height>20</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
       <property name="text">
        <string>0</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="Ch4y5input_2">
+     <widget class="QLineEdit" name="Ch4y5input">
       <property name="geometry">
        <rect>
         <x>680</x>
@@ -157,11 +182,16 @@
         <height>20</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
       <property name="text">
        <string>0</string>
       </property>
      </widget>
-     <widget class="QLabel" name="Ch4XValLabel_2">
+     <widget class="QLabel" name="Ch4XValLabel">
       <property name="geometry">
        <rect>
         <x>20</x>
@@ -181,7 +211,7 @@
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Enter the Values of X:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="Ch4x3input_2">
+     <widget class="QLineEdit" name="Ch4x3input">
       <property name="geometry">
        <rect>
         <x>420</x>
@@ -190,11 +220,16 @@
         <height>20</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
       <property name="text">
        <string>0</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="Ch4y6input_2">
+     <widget class="QLineEdit" name="Ch4y6input">
       <property name="geometry">
        <rect>
         <x>800</x>
@@ -203,11 +238,16 @@
         <height>20</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
       <property name="text">
        <string>0</string>
       </property>
      </widget>
-     <widget class="QComboBox" name="Chp4pointsbox_2">
+     <widget class="QComboBox" name="Chp4pointsbox">
       <property name="geometry">
        <rect>
         <x>430</x>
@@ -215,6 +255,11 @@
         <width>131</width>
         <height>31</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+       </font>
       </property>
       <item>
        <property name="text">
@@ -247,7 +292,7 @@
        </property>
       </item>
      </widget>
-     <widget class="QPushButton" name="Ch4StartButton_2">
+     <widget class="QPushButton" name="Ch4StartButton">
       <property name="geometry">
        <rect>
         <x>700</x>
@@ -267,7 +312,7 @@
        <string>Start Interpolation</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="Ch4y1input_2">
+     <widget class="QLineEdit" name="Ch4y1input">
       <property name="geometry">
        <rect>
         <x>160</x>
@@ -276,11 +321,16 @@
         <height>20</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
       <property name="text">
        <string>0</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="Ch4x6input_2">
+     <widget class="QLineEdit" name="Ch4x6input">
       <property name="geometry">
        <rect>
         <x>800</x>
@@ -289,11 +339,16 @@
         <height>20</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
       <property name="text">
        <string>0</string>
       </property>
      </widget>
-     <widget class="QLabel" name="Ch4ORLabel_2">
+     <widget class="QLabel" name="Ch4ORLabel">
       <property name="geometry">
        <rect>
         <x>440</x>
@@ -313,7 +368,7 @@
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;OR&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="Ch4x1input_2">
+     <widget class="QLineEdit" name="Ch4x1input">
       <property name="geometry">
        <rect>
         <x>160</x>
@@ -322,11 +377,16 @@
         <height>20</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
       <property name="text">
        <string>0</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="Ch4x5input_2">
+     <widget class="QLineEdit" name="Ch4x5input">
       <property name="geometry">
        <rect>
         <x>680</x>
@@ -335,11 +395,16 @@
         <height>20</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
       <property name="text">
        <string>0</string>
       </property>
      </widget>
-     <widget class="QComboBox" name="Ch4choicebox_2">
+     <widget class="QComboBox" name="Ch4choicebox">
       <property name="geometry">
        <rect>
         <x>320</x>
@@ -405,7 +470,7 @@
        </property>
       </item>
      </widget>
-     <widget class="QLabel" name="Ch4Label_2">
+     <widget class="QLabel" name="Ch4Label">
       <property name="geometry">
        <rect>
         <x>20</x>
@@ -425,7 +490,7 @@
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Select the required Interpolation formula from the combo box :&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
-     <widget class="QLabel" name="Ch4pointslabel_2">
+     <widget class="QLabel" name="Ch4pointslabel">
       <property name="geometry">
        <rect>
         <x>20</x>
@@ -445,7 +510,7 @@
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter the amount of points for input:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
-     <widget class="QLabel" name="Chp4formulalabel_2">
+     <widget class="QLabel" name="Chp4formulalabel">
       <property name="geometry">
        <rect>
         <x>30</x>
@@ -458,7 +523,7 @@
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Choose your method and input correct values to get the appropriate result!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="Ch4y0input_2">
+     <widget class="QLineEdit" name="Ch4y0input">
       <property name="geometry">
        <rect>
         <x>30</x>
@@ -467,11 +532,16 @@
         <height>20</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
       <property name="text">
        <string>0</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="Ch4x4input_2">
+     <widget class="QLineEdit" name="Ch4x4input">
       <property name="geometry">
        <rect>
         <x>550</x>
@@ -480,11 +550,16 @@
         <height>20</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
       <property name="text">
        <string>0</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="Ch4y2input_2">
+     <widget class="QLineEdit" name="Ch4y2input">
       <property name="geometry">
        <rect>
         <x>290</x>
@@ -493,11 +568,16 @@
         <height>20</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
       <property name="text">
        <string>0</string>
       </property>
      </widget>
-     <widget class="QLabel" name="Ch4funclabel_2">
+     <widget class="QLabel" name="Ch4funclabel">
       <property name="geometry">
        <rect>
         <x>20</x>
@@ -522,7 +602,7 @@
      <attribute name="title">
       <string>Page</string>
      </attribute>
-     <widget class="QPushButton" name="Ch4iterback_2">
+     <widget class="QPushButton" name="Ch4iterback">
       <property name="geometry">
        <rect>
         <x>740</x>
@@ -543,7 +623,7 @@
  Main Menu</string>
       </property>
      </widget>
-     <widget class="QTableWidget" name="Chp4DerivTable_2">
+     <widget class="QTableWidget" name="Chp4DerivTable">
       <property name="geometry">
        <rect>
         <x>40</x>
@@ -553,7 +633,7 @@
        </rect>
       </property>
      </widget>
-     <widget class="QLabel" name="Chp3interpolheading_3">
+     <widget class="QLabel" name="Chp4interpolheading">
       <property name="geometry">
        <rect>
         <x>270</x>
