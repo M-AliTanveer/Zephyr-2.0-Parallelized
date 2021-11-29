@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QStack>
+#include "threadproofer.h"
+#include "exprtk.hpp"
 #include <omp.h>
 using namespace std;
 MainWindow::MainWindow(QWidget *parent)
@@ -21,7 +23,7 @@ vector<QString> MainWindow::funcbreaker()
     QString input = ui->Chp4FuncInput->text();
     //ui->Chp4formulalabel->setText(input);
     QChar *arr = new QChar[input.length()];
-    int i, j,k;
+    int i, j;
     bool flag=false;
     for(i=0,j=0;i<input.length();i++,j++)
     {
@@ -69,8 +71,8 @@ vector<QString> MainWindow::funcbreaker()
 void MainWindow::on_Ch4StartButton_clicked()
 {
    vector<QString> partfuncs=funcbreaker();
-   /*ui->Chp4formulalabel->setText("");
-   for(int i=0; i<partfuncs.size();i++)
+   ui->Chp4formulalabel->setText("");
+   /*for(int i=0; i<partfuncs.size();i++)
    {
        ui->Chp4formulalabel->setText(ui->Chp4formulalabel->text() + "\n" + partfuncs[i]);
    }*/
@@ -97,7 +99,26 @@ void MainWindow::forwarddiff()
     double h = Xpoints[1] - Xpoints[0];
     int count = ui->Chp4pointsbox->currentText().toInt();
     double *answers = new double[count];
-    int ids[8];
+    ThreadProofer threads[8];
+    double result;
+    if(Ypoints[1]==Ypoints[0] && Ypoints[0]==0)
+    {
+         string input = ui->Chp4FuncInput->text().toStdString();
+         string function = input.erase(input.find('='),input.length());
+         double variable;
+         exprtk::symbol_table<double> symbol_table;
+         symbol_table.add_variable("x",variable);
+         exprtk::expression<double> expression;
+         expression.register_symbol_table(symbol_table);
+         exprtk::parser<double> calculater;
+         calculater.compile(function,expression);
+         for (int i=0; i<count; i++)
+         {
+           variable = Xpoints[i];
+           Ypoints[i] = expression.value();
+         }
+    }
+
 #pragma omp parallel for num_threads(8)
     for(int i=0; i<count;i++)
     {
@@ -105,15 +126,16 @@ void MainWindow::forwarddiff()
         answers[i]=Ypoints[i+1]-Ypoints[i];
         if(i==count-1)
         answers[i]=Ypoints[i]-Ypoints[i-1];
-        ids[i]=omp_get_thread_num();
+        threads[i].threadid=omp_get_thread_num();
         answers[i]=answers[i]/h;
-        //ui->Chp4formulalabel->setText(ui->Chp4formulalabel->text() + "\n" +"found by " + QString::number(omp_get_thread_num()));
+        threads[i].value=answers[i];
 
     }
 
     for(int i=0; i<count;i++)
     {
-        ui->Chp4formulalabel->setText(ui->Chp4formulalabel->text() +  "\n" + QString::number(answers[i]));
+        ui->Chp4formulalabel->setText(ui->Chp4formulalabel->text() + "\n" + "key value pair: " + QString::number(threads[i].threadid) + " " + QString::number(threads[i].value));
     }
+
 }
 

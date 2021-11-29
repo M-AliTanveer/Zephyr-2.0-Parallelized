@@ -10,10 +10,13 @@ CONFIG += c++11
 
 SOURCES += \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    threadproofer.cpp
 
 HEADERS += \
-    mainwindow.h
+    exprtk.hpp \
+    mainwindow.h \
+    threadproofer.h
 
 FORMS += \
     mainwindow.ui
@@ -23,5 +26,5 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-QMAKE_CXXFLAGS += -fopenmp
-LIBS += -fopenmp
+QMAKE_CXXFLAGS += -fopenmp -flto -O3
+LIBS += -fopenmp -fuse-linker-plugin
