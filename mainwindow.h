@@ -19,6 +19,7 @@ public:
     ~MainWindow();;
     std::vector<QString> funcbreaker();
     void forwarddiff();
+    void funccalculator();
 
 
 private slots:

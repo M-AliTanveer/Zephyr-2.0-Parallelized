@@ -67,7 +67,27 @@ vector<QString> MainWindow::funcbreaker()
     return partfuncs;
 }
 
-
+void MainWindow::funccalculator()
+{
+    int count = ui->Chp4pointsbox->currentText().toInt();
+    if(Ypoints[1]==Ypoints[0] && Ypoints[0]==0)
+    {
+         string input = ui->Chp4FuncInput->text().toStdString();
+         string function = input.erase(input.find('='),input.length());
+         double variable;
+         exprtk::symbol_table<double> symbol_table;
+         symbol_table.add_variable("x",variable);
+         exprtk::expression<double> expression;
+         expression.register_symbol_table(symbol_table);
+         exprtk::parser<double> calculater;
+         calculater.compile(function,expression);
+         for (int i=0; i<count; i++)
+         {
+           variable = Xpoints[i];
+           Ypoints[i] = expression.value();
+         }
+    }
+}
 void MainWindow::on_Ch4StartButton_clicked()
 {
    vector<QString> partfuncs=funcbreaker();
@@ -91,6 +111,8 @@ void MainWindow::on_Ch4StartButton_clicked()
    Ypoints[4]=ui->Ch4y4input->text().toFloat();
    Ypoints[5]=ui->Ch4y5input->text().toFloat();
    Ypoints[6]=ui->Ch4y6input->text().toFloat();
+   //forwarddiff();
+   funccalculator();
    forwarddiff();
 }
 
@@ -101,24 +123,6 @@ void MainWindow::forwarddiff()
     double *answers = new double[count];
     ThreadProofer threads[8];
     double result;
-    if(Ypoints[1]==Ypoints[0] && Ypoints[0]==0)
-    {
-         string input = ui->Chp4FuncInput->text().toStdString();
-         string function = input.erase(input.find('='),input.length());
-         double variable;
-         exprtk::symbol_table<double> symbol_table;
-         symbol_table.add_variable("x",variable);
-         exprtk::expression<double> expression;
-         expression.register_symbol_table(symbol_table);
-         exprtk::parser<double> calculater;
-         calculater.compile(function,expression);
-         for (int i=0; i<count; i++)
-         {
-           variable = Xpoints[i];
-           Ypoints[i] = expression.value();
-         }
-    }
-
 #pragma omp parallel for num_threads(8)
     for(int i=0; i<count;i++)
     {
@@ -129,13 +133,11 @@ void MainWindow::forwarddiff()
         threads[i].threadid=omp_get_thread_num();
         answers[i]=answers[i]/h;
         threads[i].value=answers[i];
-
     }
 
     for(int i=0; i<count;i++)
     {
         ui->Chp4formulalabel->setText(ui->Chp4formulalabel->text() + "\n" + "key value pair: " + QString::number(threads[i].threadid) + " " + QString::number(threads[i].value));
     }
-
 }
 
