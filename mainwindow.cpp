@@ -66,31 +66,93 @@ vector<QString> MainWindow::funcbreaker()
 
     return partfuncs;
 }
+int MainWindow::gettopop(vector<QString> funcparts)
+{
+    int darr=funcparts.size();
+    for(int i=0; i<darr;i++)
+    {
+        if(funcparts[i].toStdString()[0]=='/')
+            return i;
+    }
+    for(int i=0; i<darr;i++)
+    {
+        if(funcparts[i].toStdString()[0]=='*')
+            return i;
+    }
+    for(int i=0; i<darr;i++)
+    {
+        if(funcparts[i].toStdString()[0]=='+'||funcparts[i].toStdString()[0]=='-')
+            return i;
+    }
 
+    return -1;
+}
 void MainWindow::funccalculator()
 {
+    vector<QString> partfuncs=funcbreaker();
     int count = ui->Chp4pointsbox->currentText().toInt();
     if(Ypoints[1]==Ypoints[0] && Ypoints[0]==0)
     {
-         string input = ui->Chp4FuncInput->text().toStdString();
-         string function = input.erase(input.find('='),input.length());
+         //string input = ui->Chp4FuncInput->text().toStdString();
+         //string function = input.erase(input.find('='),input.length());
          double variable;
+         int darr;
+         partfuncs.size()%2==0?(darr=partfuncs.size()/2):(darr=partfuncs.size()/2+1);
+         vector<vector<double>> computed_vals;
+#pragma omp parallel num_threads(darr)
+    {
          exprtk::symbol_table<double> symbol_table;
          symbol_table.add_variable("x",variable);
          exprtk::expression<double> expression;
          expression.register_symbol_table(symbol_table);
          exprtk::parser<double> calculater;
-         calculater.compile(function,expression);
-         for (int i=0; i<count; i++)
+#pragma omp for ordered
+         for(int i=0; i<darr;i++)
          {
-           variable = Xpoints[i];
-           Ypoints[i] = expression.value();
+             vector<double> vals;
+             string function = partfuncs[2*i].toStdString();
+             calculater.compile(function,expression);
+             for (int j=0; j<count; j++)
+             {
+               variable = Xpoints[j];
+               vals.insert(vals.begin()+j,expression.value());
+             }
+#pragma omp ordered
+             {computed_vals.insert(computed_vals.begin()+i,vals);}
+         }
+     }
+         for(int i=0; i<darr;i++)
+         {
+             vector<double> ans;
+             int op = gettopop(partfuncs);
+             if(op!=-1)
+            {
+                 for(int j=0; j<count;j++)
+                 {
+                     if(partfuncs[op].toStdString()[0]=='/')
+                         ans.insert(ans.begin()+j, computed_vals[op/2][j]/computed_vals[op/2+1][j]);
+                     else if(partfuncs[op].toStdString()[0]=='*')
+                         ans.insert(ans.begin()+j, computed_vals[op/2][j]*computed_vals[op/2+1][j]);
+                     else if(partfuncs[op].toStdString()[0]=='+')
+                         ans.insert(ans.begin()+j, computed_vals[op/2][j]+computed_vals[op/2+1][j]);
+                     else if(partfuncs[op].toStdString()[0]=='-')
+                         ans.insert(ans.begin()+j, computed_vals[op/2][j]-computed_vals[op/2+1][j]);
+                  ui->Chp4formulalabel->setText(ui->Chp4formulalabel->text() + "\n" + QString::number(ans[j]));
+                 }
+                 computed_vals.erase(computed_vals.begin()+(op/2));
+                 computed_vals.insert(computed_vals.begin()+(op/2),ans);
+
+                 computed_vals.erase(computed_vals.begin()+(op/2)+1);
+
+                 partfuncs.erase(partfuncs.begin()+op-1,partfuncs.begin()+op+1);
+                 //partfuncs.insert(partfuncs.begin()+op-1,QString("dummy"));
+             }
+
          }
     }
 }
 void MainWindow::on_Ch4StartButton_clicked()
 {
-   vector<QString> partfuncs=funcbreaker();
    ui->Chp4formulalabel->setText("");
    /*for(int i=0; i<partfuncs.size();i++)
    {
@@ -113,7 +175,8 @@ void MainWindow::on_Ch4StartButton_clicked()
    Ypoints[6]=ui->Ch4y6input->text().toFloat();
    //forwarddiff();
    funccalculator();
-   forwarddiff();
+   //forwarddiff();
+   //3point();
 }
 
 void MainWindow::forwarddiff()
@@ -123,7 +186,7 @@ void MainWindow::forwarddiff()
     double *answers = new double[count];
     ThreadProofer threads[8];
     double result;
-#pragma omp parallel for num_threads(8)
+#pragma omp parallel for num_threads(count)
     for(int i=0; i<count;i++)
     {
         if(i!=count-1)

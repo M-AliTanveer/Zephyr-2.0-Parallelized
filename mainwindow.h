@@ -20,6 +20,7 @@ public:
     std::vector<QString> funcbreaker();
     void forwarddiff();
     void funccalculator();
+    int gettopop(std::vector<QString> funcparts);
 
 
 private slots:
