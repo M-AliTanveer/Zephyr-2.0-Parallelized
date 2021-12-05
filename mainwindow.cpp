@@ -16,6 +16,7 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+
 vector<QString> MainWindow::funcbreaker()
 {
     QStack<QChar>bracket;
@@ -66,6 +67,7 @@ vector<QString> MainWindow::funcbreaker()
 
     return partfuncs;
 }
+
 int MainWindow::gettopop(vector<QString> funcparts)
 {
     int darr=funcparts.size();
@@ -87,14 +89,13 @@ int MainWindow::gettopop(vector<QString> funcparts)
 
     return -1;
 }
+
 void MainWindow::funccalculator()
 {
     vector<QString> partfuncs=funcbreaker();
     int count = ui->Chp4pointsbox->currentText().toInt();
     if(Ypoints[1]==Ypoints[0] && Ypoints[0]==0)
     {
-         //string input = ui->Chp4FuncInput->text().toStdString();
-         //string function = input.erase(input.find('='),input.length());
          double variable;
          int darr;
          partfuncs.size()%2==0?(darr=partfuncs.size()/2):(darr=partfuncs.size()/2+1);
@@ -137,7 +138,7 @@ void MainWindow::funccalculator()
                          ans.insert(ans.begin()+j, computed_vals[op/2][j]+computed_vals[op/2+1][j]);
                      else if(partfuncs[op].toStdString()[0]=='-')
                          ans.insert(ans.begin()+j, computed_vals[op/2][j]-computed_vals[op/2+1][j]);
-                  ui->Chp4formulalabel->setText(ui->Chp4formulalabel->text() + "\n" + QString::number(ans[j]));
+
                  }
                  computed_vals.erase(computed_vals.begin()+(op/2));
                  computed_vals.insert(computed_vals.begin()+(op/2),ans);
@@ -145,19 +146,21 @@ void MainWindow::funccalculator()
                  computed_vals.erase(computed_vals.begin()+(op/2)+1);
 
                  partfuncs.erase(partfuncs.begin()+op-1,partfuncs.begin()+op+1);
-                 //partfuncs.insert(partfuncs.begin()+op-1,QString("dummy"));
+
              }
 
          }
+         for(int i=0; i<count; i++)
+         {
+             Ypoints[i]=computed_vals[0][i];
+         }
     }
 }
+
 void MainWindow::on_Ch4StartButton_clicked()
 {
    ui->Chp4formulalabel->setText("");
-   /*for(int i=0; i<partfuncs.size();i++)
-   {
-       ui->Chp4formulalabel->setText(ui->Chp4formulalabel->text() + "\n" + partfuncs[i]);
-   }*/
+   int count = ui->Chp4pointsbox->currentText().toInt();
    Xpoints[0]=ui->Ch4x0input->text().toFloat();
    Xpoints[1]=ui->Ch4x1input->text().toFloat();
    Xpoints[2]=ui->Ch4x2input->text().toFloat();
@@ -175,7 +178,7 @@ void MainWindow::on_Ch4StartButton_clicked()
    Ypoints[6]=ui->Ch4y6input->text().toFloat();
    //forwarddiff();
    funccalculator();
-   //forwarddiff();
+   forwarddiff();
    //3point();
 }
 
