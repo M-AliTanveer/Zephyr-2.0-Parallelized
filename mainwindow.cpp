@@ -183,6 +183,9 @@ void MainWindow::on_Ch4StartButton_clicked()
    if(ui->Ch4choicebox->currentText() == "3 Point Mid & End"){
        threepoint();
    }
+   else if(ui->Ch4choicebox->currentText() == "5 Point Mid & End"){
+       threepoint();
+   }
    else{
        forwarddiff();
    }
@@ -265,6 +268,7 @@ void MainWindow::threepoint()
         answers[i] = (-3 * (Ypoints[i]) + 4 * (Ypoints[i - 1]) - (Ypoints[i - 2]));
         q = h - 2 * h;
         answers[i] = answers[i] / (2 * q);
+        threads[i].value=answers[i];
       }
     }
   }
@@ -282,7 +286,6 @@ void MainWindow::fivepoint(){
     double DerivAns=0;
 #pragma omp parallel for num_threads(count)
     for(int j =0; j<count; j++){
-    while(i>count){
       if(i+5<=count){
         DerivAns+=-25*Ypoints[i];
             DerivAns+=48*Ypoints[i+1];
@@ -307,7 +310,11 @@ void MainWindow::fivepoint(){
             DerivAns=DerivAns/(12*height);
       }
       i++;
-    }
+      answers[i]=round(DerivAns);
+      threads[i].value=answers[i];
   }
-
+    for(int i=0; i<count;i++)
+    {
+        ui->Chp4formulalabel->setText(ui->Chp4formulalabel->text() + "\n" + "key value pair: " + " " + QString::number(threads[i].value));
+    }
 }
