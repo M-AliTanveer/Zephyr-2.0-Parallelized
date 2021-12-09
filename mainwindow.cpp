@@ -178,8 +178,17 @@ void MainWindow::on_Ch4StartButton_clicked()
    Ypoints[6]=ui->Ch4y6input->text().toFloat();
    //forwarddiff();
    funccalculator();
-   forwarddiff();
+   //forwarddiff();
    //3point();
+   if(ui->Ch4choicebox->currentText() == "3 Point Mid & End"){
+       threepoint();
+   }
+   else if(ui->Ch4choicebox->currentText() == "5 Point Mid & End"){
+       threepoint();
+   }
+   else{
+       forwarddiff();
+   }
 }
 
 void MainWindow::forwarddiff()
@@ -206,4 +215,106 @@ void MainWindow::forwarddiff()
         ui->Chp4formulalabel->setText(ui->Chp4formulalabel->text() + "\n" + "key value pair: " + QString::number(threads[i].threadid) + " " + QString::number(threads[i].value));
     }
 }
-
+void MainWindow::threepoint()
+{
+  double h = Xpoints[1] - Xpoints[0];
+  int count = ui->Chp4pointsbox->currentText().toInt();
+  double *answers = new double[count];
+  double q;
+  ThreadProofer threads[8];
+  if (count % 2 == 0)
+  {
+    int m2 = count / 2;
+    int m1 = m2 - 1;
+    #pragma omp parallel for num_threads(8)
+    for (int i = 0; i < count; i++)
+    {
+      if ((i < m1) && (i < m2))
+      {
+        answers[i] = (-3*(Ypoints[i])+(4*(Ypoints[i+1]+1))-(Ypoints[i+2]));
+        answers[i] = answers[i] / (2*h);
+      }
+      else if ((i == m1) || (i == m2))
+      {
+        answers[i] = (Ypoints[i+1] - Ypoints[i-1]);
+        answers[i] = answers[i] / (2*h);
+      }
+      else if ((i > m1) && (i > m2))
+      {
+        answers[i] = (-3 * (Ypoints[i]) + 4 * (Ypoints[i-1]) - (Ypoints[i-2]));
+        q = h - 2 * h;
+        answers[i] = (answers[i]/(2*q));
+      }
+    }
+  }
+  else
+  {
+    int m = floor(count / 2);
+    #pragma omp parallel for num_threads(8)
+    for (int i = 0; i < count; i++)
+    {
+      if (i < m)
+      {
+        answers[i] = (-3*(Ypoints[i])+4*(Ypoints[i+1])-(Ypoints[i+2]));
+        answers[i] = answers[i]/(2*h);
+      }
+      else if (i == m)
+      {
+        answers[i] = (Ypoints[i+1]-Ypoints[i-1]);
+        answers[i] = answers[i] / (2 * h);
+      }
+      else if (i > m)
+      {
+        answers[i] = (-3 * (Ypoints[i]) + 4 * (Ypoints[i - 1]) - (Ypoints[i - 2]));
+        q = h - 2 * h;
+        answers[i] = answers[i] / (2 * q);
+        threads[i].value=answers[i];
+      }
+    }
+  }
+  for(int i=0; i<count;i++)
+  {
+      ui->Chp4formulalabel->setText(ui->Chp4formulalabel->text() + "\n" + "key value pair: " + " " + QString::number(threads[i].value));
+  }
+}
+void MainWindow::fivepoint(){
+ double height = Xpoints[1] - Xpoints[0];
+    int count = ui->Chp4pointsbox->currentText().toInt();
+    double *answers = new double[count];
+    ThreadProofer threads[8];
+    int i=0;
+    double DerivAns=0;
+#pragma omp parallel for num_threads(count)
+    for(int j =0; j<count; j++){
+      if(i+5<=count){
+        DerivAns+=-25*Ypoints[i];
+            DerivAns+=48*Ypoints[i+1];
+            DerivAns+=-36*Ypoints[i+2];
+            DerivAns+=16*Ypoints[i+3];
+            DerivAns+=-3*Ypoints[i+4];
+            DerivAns=DerivAns/(12*height);
+      }
+      else if(i-4 >= 0){
+            DerivAns+=-25*Ypoints[i];
+            DerivAns+=48*Ypoints[i-1];
+            DerivAns+=-36*Ypoints[i-2];
+            DerivAns+=16*Ypoints[i-3];
+            DerivAns+=-3*Ypoints[i-4];
+            DerivAns=DerivAns/(-12*height);
+      }
+      else{
+            DerivAns+=Ypoints[i-2];
+            DerivAns+=-8*Ypoints[i-1];
+            DerivAns+=8*Ypoints[i+1];
+            DerivAns+=-1*Ypoints[i+2];
+            DerivAns=DerivAns/(12*height);
+      }
+      i++;
+      answers[i]=round(DerivAns);
+      threads[i].value=answers[i];
+  }
+    for(int i=0; i<count;i++)
+    {
+        ui->Chp4formulalabel->setText(ui->Chp4formulalabel->text() + "\n" + "key value pair: " + " " + QString::number(threads[i].value));
+    }
+}

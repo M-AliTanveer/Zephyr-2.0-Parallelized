@@ -19,6 +19,8 @@ public:
     ~MainWindow();;
     std::vector<QString> funcbreaker();
     void forwarddiff();
+    void threepoint();
+    void fivepoint();
     void funccalculator();
     int gettopop(std::vector<QString> funcparts);
 
