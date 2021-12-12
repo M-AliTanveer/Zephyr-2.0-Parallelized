@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QFile>
 #include <vector>
 
 QT_BEGIN_NAMESPACE
@@ -24,10 +25,18 @@ public:
     void funccalculator(int count, const double *xarr, double *yarr);
     int gettopop(std::vector<QString> funcparts);
     void compositetrapezoidal();
+    void simpsonthird();
+    void simpsoneight();
+    void compmidpoint();
 
 
 private slots:
     void on_Ch4StartButton_clicked();
+    void on_Ch4choicebox_currentTextChanged(const QString &arg1);
+
+    void on_Chp4pointsbox_currentIndexChanged(int index);
+
+    void on_Ch4iterback_clicked();
 
 private:
     Ui::MainWindow *ui;

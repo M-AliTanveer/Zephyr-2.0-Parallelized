@@ -31,7 +31,7 @@
       <property name="geometry">
        <rect>
         <x>30</x>
-        <y>240</y>
+        <y>250</y>
         <width>81</width>
         <height>20</height>
        </rect>
@@ -48,8 +48,8 @@
      <widget class="QLineEdit" name="Chp4FuncInput">
       <property name="geometry">
        <rect>
-        <x>320</x>
-        <y>370</y>
+        <x>360</x>
+        <y>390</y>
         <width>271</width>
         <height>31</height>
        </rect>
@@ -105,7 +105,7 @@
         <x>20</x>
         <y>280</y>
         <width>451</width>
-        <height>21</height>
+        <height>31</height>
        </rect>
       </property>
       <property name="font">
@@ -120,10 +120,13 @@
       </property>
      </widget>
      <widget class="QLineEdit" name="Ch4x2input">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>290</x>
-        <y>240</y>
+        <y>250</y>
         <width>81</width>
         <height>20</height>
        </rect>
@@ -138,10 +141,13 @@
       </property>
      </widget>
      <widget class="QLineEdit" name="Ch4y4input">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>550</x>
-        <y>320</y>
+        <y>330</y>
         <width>81</width>
         <height>20</height>
        </rect>
@@ -156,10 +162,13 @@
       </property>
      </widget>
      <widget class="QLineEdit" name="Ch4y3input">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>420</x>
-        <y>320</y>
+        <y>330</y>
         <width>81</width>
         <height>20</height>
        </rect>
@@ -174,10 +183,13 @@
       </property>
      </widget>
      <widget class="QLineEdit" name="Ch4y5input">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>680</x>
-        <y>320</y>
+        <y>330</y>
         <width>81</width>
         <height>20</height>
        </rect>
@@ -212,10 +224,13 @@
       </property>
      </widget>
      <widget class="QLineEdit" name="Ch4x3input">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>420</x>
-        <y>240</y>
+        <y>250</y>
         <width>81</width>
         <height>20</height>
        </rect>
@@ -230,10 +245,13 @@
       </property>
      </widget>
      <widget class="QLineEdit" name="Ch4y6input">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>800</x>
-        <y>320</y>
+        <y>330</y>
         <width>81</width>
         <height>20</height>
        </rect>
@@ -316,7 +334,7 @@
       <property name="geometry">
        <rect>
         <x>160</x>
-        <y>320</y>
+        <y>330</y>
         <width>81</width>
         <height>20</height>
        </rect>
@@ -331,10 +349,13 @@
       </property>
      </widget>
      <widget class="QLineEdit" name="Ch4x6input">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>800</x>
-        <y>240</y>
+        <y>250</y>
         <width>81</width>
         <height>20</height>
        </rect>
@@ -351,8 +372,8 @@
      <widget class="QLabel" name="Ch4ORLabel">
       <property name="geometry">
        <rect>
-        <x>440</x>
-        <y>340</y>
+        <x>460</x>
+        <y>360</y>
         <width>31</width>
         <height>31</height>
        </rect>
@@ -372,7 +393,7 @@
       <property name="geometry">
        <rect>
         <x>160</x>
-        <y>240</y>
+        <y>250</y>
         <width>81</width>
         <height>20</height>
        </rect>
@@ -387,10 +408,13 @@
       </property>
      </widget>
      <widget class="QLineEdit" name="Ch4x5input">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>680</x>
-        <y>240</y>
+        <y>250</y>
         <width>81</width>
         <height>20</height>
        </rect>
@@ -509,9 +533,9 @@
       <property name="geometry">
        <rect>
         <x>30</x>
-        <y>420</y>
+        <y>450</y>
         <width>611</width>
-        <height>141</height>
+        <height>111</height>
        </rect>
       </property>
       <property name="text">
@@ -525,7 +549,7 @@
       <property name="geometry">
        <rect>
         <x>30</x>
-        <y>320</y>
+        <y>330</y>
         <width>81</width>
         <height>20</height>
        </rect>
@@ -540,10 +564,13 @@
       </property>
      </widget>
      <widget class="QLineEdit" name="Ch4x4input">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>550</x>
-        <y>240</y>
+        <y>250</y>
         <width>81</width>
         <height>20</height>
        </rect>
@@ -558,10 +585,13 @@
       </property>
      </widget>
      <widget class="QLineEdit" name="Ch4y2input">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>290</x>
-        <y>320</y>
+        <y>330</y>
         <width>81</width>
         <height>20</height>
        </rect>
@@ -579,8 +609,8 @@
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>370</y>
-        <width>301</width>
+        <y>390</y>
+        <width>331</width>
         <height>31</height>
        </rect>
       </property>
@@ -606,7 +636,7 @@
         <x>740</x>
         <y>510</y>
         <width>131</width>
-        <height>71</height>
+        <height>61</height>
        </rect>
       </property>
       <property name="font">
@@ -625,9 +655,9 @@
       <property name="geometry">
        <rect>
         <x>40</x>
-        <y>50</y>
+        <y>60</y>
         <width>811</width>
-        <height>451</height>
+        <height>441</height>
        </rect>
       </property>
      </widget>

@@ -92,6 +92,10 @@ int MainWindow::gettopop(vector<QString> funcparts)
 
 void MainWindow::funccalculator(int count,const double *xarr, double *yarr)
 {
+    QFile localvaluefile("Threadlocals.txt");
+    localvaluefile.open(QIODevice::ReadWrite|QIODevice::Text);
+    QTextStream file(&localvaluefile);
+    file <<"------------- Function Calculator called-----------------\n";
     vector<QString> partfuncs=funcbreaker();
     if(yarr[1]==yarr[0] && yarr[0]==0)
     {
@@ -99,6 +103,7 @@ void MainWindow::funccalculator(int count,const double *xarr, double *yarr)
          int darr;
          partfuncs.size()%2==0?(darr=partfuncs.size()/2):(darr=partfuncs.size()/2+1);
          vector<vector<double>> computed_vals;
+         file <<"Threads created: " <<darr <<"\n";
 #pragma omp parallel num_threads(darr)
     {
          exprtk::symbol_table<double> symbol_table;
@@ -111,11 +116,15 @@ void MainWindow::funccalculator(int count,const double *xarr, double *yarr)
          {
              vector<double> vals;
              string function = partfuncs[2*i].toStdString();
+#pragma omp critical
+             {file <<"Thread id: " <<omp_get_thread_num() <<" will work on sub function " <<partfuncs[2*i]<<"\n";}
              calculater.compile(function,expression);
              for (int j=0; j<count; j++)
              {
                variable = xarr[j];
                vals.insert(vals.begin()+j,expression.value());
+#pragma omp critical
+               {file <<"Thread id: " <<omp_get_thread_num() <<" calculated  "<<expression.value() <<" for "<<partfuncs[2*i]<<"\n";}
              }
 #pragma omp ordered
              {computed_vals.insert(computed_vals.begin()+i,vals);}
@@ -156,6 +165,41 @@ void MainWindow::funccalculator(int count,const double *xarr, double *yarr)
     }
 }
 
+void MainWindow::on_Ch4choicebox_currentTextChanged(const QString &arg1)
+{
+    ui->Chp4pointsbox->setCurrentIndex(1);
+    ui->Chp4pointsbox->setDisabled(false);
+    ui->Ch4XValLabel->setText("Enter the Values of X:");
+    ui->Ch4YValLabel->setText("Enter the Values of Y:");
+    ui->Ch4funclabel->setText("Enter the Function f(x):");
+    QString method = ui->Ch4choicebox->currentText();
+
+    if(method=="Forward Difference")
+        ui->Chp4pointsbox->setCurrentIndex(0);
+    else if(method=="3 Point Mid & End")
+        ui->Chp4pointsbox->setCurrentIndex(1);
+    else if(method=="5 Point Mid & End")
+        ui->Chp4pointsbox->setCurrentIndex(3);
+    else if(method=="Trapezoid"||method=="Simpson 1/3rd"||method=="Simpson 3/8th"||method == "Midpoint ")
+    {
+        ui->Chp4pointsbox->setDisabled(true);
+        ui->Ch4XValLabel->setText("Enter the value of limits 'a' and 'b':");
+        ui->Ch4YValLabel->setText("Enter the value of height 'h':");
+        ui->Ch4funclabel->setText("Enter the Expression to Integrate:");
+        ui->Ch4x2input->setDisabled(true);
+        ui->Ch4x3input->setDisabled(true);
+        ui->Ch4x4input->setDisabled(true);
+        ui->Ch4x5input->setDisabled(true);
+        ui->Ch4x6input->setDisabled(true);
+        ui->Ch4y1input->setDisabled(true);
+        ui->Ch4y2input->setDisabled(true);
+        ui->Ch4y3input->setDisabled(true);
+        ui->Ch4y4input->setDisabled(true);
+        ui->Ch4y5input->setDisabled(true);
+        ui->Ch4y6input->setDisabled(true);
+    }
+}
+
 void MainWindow::on_Ch4StartButton_clicked()
 {
    ui->Chp4formulalabel->setText("");
@@ -188,6 +232,18 @@ void MainWindow::on_Ch4StartButton_clicked()
    {
        compositetrapezoidal();
    }
+   else if(ui->Ch4choicebox->currentText() == "Simpson 1/3rd")
+   {
+       simpsonthird();
+   }
+   else if(ui->Ch4choicebox->currentText() == "Simpson 3/8th")
+   {
+       simpsoneight();
+   }
+   else if(ui->Ch4choicebox->currentText() == "Midpoint ")
+   {
+       compmidpoint();
+   }
 }
 
 void MainWindow::forwarddiff()
@@ -210,10 +266,23 @@ void MainWindow::forwarddiff()
         threads[i].value=answers[i];
     }
 
+    ui->Chp4DerivTable->setRowCount(count);
+    ui->Chp4DerivTable->setColumnCount(3);
+    ui->Chp4DerivTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    QStringList horizontalheaders;
+    horizontalheaders <<"X Values" <<"Y Values" <<"f`(x) Values";
+    ui->Chp4DerivTable->setHorizontalHeaderLabels(horizontalheaders);
+    ui->Chp4DerivTable->horizontalHeader()->setVisible(true);
+    ui->Chp4DerivTable->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->Chp4DerivTable->verticalHeader()->setVisible(false);
+    ui->Chp4DerivTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     for(int i=0; i<count;i++)
     {
-        ui->Chp4formulalabel->setText(ui->Chp4formulalabel->text() + "\n" + "key value pair: " + QString::number(threads[i].threadid) + " " + QString::number(threads[i].value));
+        ui->Chp4DerivTable->setItem(i,0,new QTableWidgetItem(QString::number(Xpoints[i])));
+        ui->Chp4DerivTable->setItem(i,1,new QTableWidgetItem(QString::number(Ypoints[i])));
+        ui->Chp4DerivTable->setItem(i,2,new QTableWidgetItem(QString::number(threads[i].value)));
     }
+    ui->tabWidget->setCurrentIndex(1);
 }
 
 void MainWindow::threepoint()
@@ -278,10 +347,23 @@ void MainWindow::threepoint()
       threads[i].value=answers[i];
     }
   }
+  ui->Chp4DerivTable->setRowCount(count);
+  ui->Chp4DerivTable->setColumnCount(3);
+  ui->Chp4DerivTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+  QStringList horizontalheaders;
+  horizontalheaders <<"X Values" <<"Y Values" <<"f`(x) Values";
+  ui->Chp4DerivTable->setHorizontalHeaderLabels(horizontalheaders);
+  ui->Chp4DerivTable->horizontalHeader()->setVisible(true);
+  ui->Chp4DerivTable->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+  ui->Chp4DerivTable->verticalHeader()->setVisible(false);
+  ui->Chp4DerivTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
   for(int i=0; i<count;i++)
   {
-      ui->Chp4formulalabel->setText(ui->Chp4formulalabel->text() + "\n" + "key value pair: " + QString::number(threads[i].threadid) + " " + QString::number(threads[i].value));
+      ui->Chp4DerivTable->setItem(i,0,new QTableWidgetItem(QString::number(Xpoints[i])));
+      ui->Chp4DerivTable->setItem(i,1,new QTableWidgetItem(QString::number(Ypoints[i])));
+      ui->Chp4DerivTable->setItem(i,2,new QTableWidgetItem(QString::number(threads[i].value)));
   }
+  ui->tabWidget->setCurrentIndex(1);
 }
 
 void MainWindow::fivepoint()
@@ -322,10 +404,23 @@ void MainWindow::fivepoint()
       answers[i]=round(DerivAns);
       threads[i].value=answers[i];
   }
+    ui->Chp4DerivTable->setRowCount(count);
+    ui->Chp4DerivTable->setColumnCount(3);
+    ui->Chp4DerivTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    QStringList horizontalheaders;
+    horizontalheaders <<"X Values" <<"Y Values" <<"f`(x) Values";
+    ui->Chp4DerivTable->setHorizontalHeaderLabels(horizontalheaders);
+    ui->Chp4DerivTable->horizontalHeader()->setVisible(true);
+    ui->Chp4DerivTable->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->Chp4DerivTable->verticalHeader()->setVisible(false);
+    ui->Chp4DerivTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     for(int i=0; i<count;i++)
     {
-        ui->Chp4formulalabel->setText(ui->Chp4formulalabel->text() + "\n" + "key value pair: " + " " + QString::number(threads[i].value));
+        ui->Chp4DerivTable->setItem(i,0,new QTableWidgetItem(QString::number(Xpoints[i])));
+        ui->Chp4DerivTable->setItem(i,1,new QTableWidgetItem(QString::number(Ypoints[i])));
+        ui->Chp4DerivTable->setItem(i,2,new QTableWidgetItem(QString::number(threads[i].value)));
     }
+    ui->tabWidget->setCurrentIndex(1);
 }
 
 void MainWindow::compositetrapezoidal()
@@ -354,12 +449,227 @@ void MainWindow::compositetrapezoidal()
 #pragma omp parallel for reduction(+:ans) num_threads(count)
     for(int i =1; i<count-1;i++)
     {
-        ans+=2*yvals[i];
+        ans=2*yvals[i];
     }
     ans=ans+yvals[0]+yvals[count-1];
     ans=ans*(h/2);
 
-    ui->Chp4formulalabel->setText(ui->Chp4formulalabel->text() + "\n" + QString::number(ans));
+    ui->Chp4DerivTable->setRowCount(count);
+    ui->Chp4DerivTable->setColumnCount(3);
+    ui->Chp4DerivTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    QStringList horizontalheaders;
+    horizontalheaders <<"X Values" <<"Y Values" <<"Integrated Answer";
+    ui->Chp4DerivTable->setHorizontalHeaderLabels(horizontalheaders);
+    ui->Chp4DerivTable->horizontalHeader()->setVisible(true);
+    ui->Chp4DerivTable->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->Chp4DerivTable->verticalHeader()->setVisible(false);
+    ui->Chp4DerivTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    for(int i=0; i<count;i++)
+    {
+        ui->Chp4DerivTable->setItem(i,0,new QTableWidgetItem(QString::number(xvals[i])));
+        ui->Chp4DerivTable->setItem(i,1,new QTableWidgetItem(QString::number(yvals[i])));
+    }
+    ui->Chp4DerivTable->setItem(count/2,2,new QTableWidgetItem(QString::number(ans)));
+
+    ui->tabWidget->setCurrentIndex(1);
 
 
 }
+
+void MainWindow::simpsonthird()
+{
+    double a = Xpoints[0];
+    double b = Xpoints[1];
+
+    double h = Ypoints[0];
+    int count = (b-a)/h;
+    count++;
+    double *xvals = new double[count];
+    xvals[0]=a;
+    double *yvals = new double[count];
+#pragma omp parallel for num_threads(count)
+    for(int i=1; i<count;i++)
+    {
+        xvals[i]=xvals[0]+h*i;
+    }
+    for(int i=0;i<count;i++)
+    {
+        yvals[i]=0;
+    }
+    funccalculator(count,xvals,yvals);
+    double ans=0;
+#pragma omp parallel for reduction(+:ans) num_threads(count)
+    for(int i =1; i<count-1;i++)
+    {
+        if(i%2==0)
+        {
+            ans=2*yvals[i];
+        }
+        else
+            ans=4*yvals[i];
+    }
+    ans=ans+yvals[0]+yvals[count-1];
+    ans=ans*(h/3);
+    ui->Chp4DerivTable->setRowCount(count);
+    ui->Chp4DerivTable->setColumnCount(3);
+    ui->Chp4DerivTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    QStringList horizontalheaders;
+    horizontalheaders <<"X Values" <<"Y Values" <<"Integrated Answer";
+    ui->Chp4DerivTable->setHorizontalHeaderLabels(horizontalheaders);
+    ui->Chp4DerivTable->horizontalHeader()->setVisible(true);
+    ui->Chp4DerivTable->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->Chp4DerivTable->verticalHeader()->setVisible(false);
+    ui->Chp4DerivTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    for(int i=0; i<count;i++)
+    {
+        ui->Chp4DerivTable->setItem(i,0,new QTableWidgetItem(QString::number(xvals[i])));
+        ui->Chp4DerivTable->setItem(i,1,new QTableWidgetItem(QString::number(yvals[i])));
+    }
+    ui->Chp4DerivTable->setItem(count/2,2,new QTableWidgetItem(QString::number(ans)));
+
+    ui->tabWidget->setCurrentIndex(1);
+}
+
+void MainWindow::simpsoneight()
+{
+    double a = Xpoints[0];
+    double b = Xpoints[1];
+
+    double h = Ypoints[0];
+    int count = (b-a)/h;
+    count++;
+    double *xvals = new double[count];
+    xvals[0]=a;
+    double *yvals = new double[count];
+#pragma omp parallel for num_threads(count)
+    for(int i=1; i<count;i++)
+    {
+        xvals[i]=xvals[0]+h*i;
+    }
+    for(int i=0;i<count;i++)
+    {
+        yvals[i]=0;
+    }
+    funccalculator(count,xvals,yvals);
+    double ans=0;
+#pragma omp parallel for reduction(+:ans) num_threads(count)
+    for(int i =1; i<count-1;i++)
+    {
+        if(i%3==0)
+        {
+            ans=2*yvals[i];
+        }
+        else
+            ans=3*yvals[i];
+    }
+    ans=ans+yvals[0]+yvals[count-1];
+    ans=(ans*3*h)/8;
+    ui->Chp4DerivTable->setRowCount(count);
+    ui->Chp4DerivTable->setColumnCount(3);
+    ui->Chp4DerivTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    QStringList horizontalheaders;
+    horizontalheaders <<"X Values" <<"Y Values" <<"Integrated Answer";
+    ui->Chp4DerivTable->setHorizontalHeaderLabels(horizontalheaders);
+    ui->Chp4DerivTable->horizontalHeader()->setVisible(true);
+    ui->Chp4DerivTable->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->Chp4DerivTable->verticalHeader()->setVisible(false);
+    ui->Chp4DerivTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    for(int i=0; i<count;i++)
+    {
+        ui->Chp4DerivTable->setItem(i,0,new QTableWidgetItem(QString::number(xvals[i])));
+        ui->Chp4DerivTable->setItem(i,1,new QTableWidgetItem(QString::number(yvals[i])));
+    }
+    ui->Chp4DerivTable->setItem(count/2,2,new QTableWidgetItem(QString::number(ans)));
+
+    ui->tabWidget->setCurrentIndex(1);
+
+}
+
+void MainWindow::compmidpoint()
+{
+    double a = Xpoints[0];
+    double b = Xpoints[1];
+
+    double h = Ypoints[0];
+    int count = (b-a)/h;
+    count++;
+    double *xvals = new double[count];
+    xvals[0]=a;
+    double *yvals = new double[count];
+#pragma omp parallel for num_threads(count)
+    for(int i=1; i<count;i++)
+    {
+        xvals[i]=xvals[0]+h*i;
+    }
+    for(int i=0;i<count;i++)
+    {
+        yvals[i]=0;
+    }
+    funccalculator(count,xvals,yvals);
+    double ans=0;
+#pragma omp parallel for reduction(+:ans) num_threads(count/2)
+    for(int i =1; i<count;i+=2)
+    {
+        ans=yvals[i];
+    }
+    ans=ans*2*h;
+    ui->Chp4DerivTable->setRowCount(count);
+    ui->Chp4DerivTable->setColumnCount(3);
+    ui->Chp4DerivTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    QStringList horizontalheaders;
+    horizontalheaders <<"X Values" <<"Y Values" <<"Integrated Answer";
+    ui->Chp4DerivTable->setHorizontalHeaderLabels(horizontalheaders);
+    ui->Chp4DerivTable->horizontalHeader()->setVisible(true);
+    ui->Chp4DerivTable->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->Chp4DerivTable->verticalHeader()->setVisible(false);
+    ui->Chp4DerivTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    for(int i=0; i<count;i++)
+    {
+        ui->Chp4DerivTable->setItem(i,0,new QTableWidgetItem(QString::number(xvals[i])));
+        ui->Chp4DerivTable->setItem(i,1,new QTableWidgetItem(QString::number(yvals[i])));
+    }
+    ui->Chp4DerivTable->setItem(count/2,2,new QTableWidgetItem(QString::number(ans)));
+
+    ui->tabWidget->setCurrentIndex(1);
+
+}
+
+void MainWindow::on_Chp4pointsbox_currentIndexChanged(int index)
+{
+    int count = ui->Chp4pointsbox->currentText().toInt();
+    QLineEdit *ptrx[7],*ptry[7];
+    ptrx[0]=ui->Ch4x0input;
+    ptrx[1]=ui->Ch4x1input;
+    ptrx[2]=ui->Ch4x2input;
+    ptrx[3]=ui->Ch4x3input;
+    ptrx[4]=ui->Ch4x4input;
+    ptrx[5]=ui->Ch4x5input;
+    ptrx[6]=ui->Ch4x6input;
+
+    ptry[0]=ui->Ch4y0input;
+    ptry[1]=ui->Ch4y1input;
+    ptry[2]=ui->Ch4y2input;
+    ptry[3]=ui->Ch4y3input;
+    ptry[4]=ui->Ch4y4input;
+    ptry[5]=ui->Ch4y5input;
+    ptry[6]=ui->Ch4y6input;
+
+    for(int i=0; i<7; i++)
+    {
+        ptrx[i]->setDisabled(true);
+        ptry[i]->setDisabled(true);
+    }
+
+    for(int i=0; i<count; i++)
+    {
+        ptrx[i]->setDisabled(false);
+        ptry[i]->setDisabled(false);
+    }
+
+}
+
+void MainWindow::on_Ch4iterback_clicked()
+{
+    ui->tabWidget->setCurrentIndex(0);
+}
+
