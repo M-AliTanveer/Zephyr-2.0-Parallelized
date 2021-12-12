@@ -21,8 +21,9 @@ public:
     void forwarddiff();
     void threepoint();
     void fivepoint();
-    void funccalculator();
+    void funccalculator(int count, const double *xarr, double *yarr);
     int gettopop(std::vector<QString> funcparts);
+    void compositetrapezoidal();
 
 
 private slots:

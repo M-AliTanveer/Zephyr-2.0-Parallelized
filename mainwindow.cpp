@@ -90,11 +90,10 @@ int MainWindow::gettopop(vector<QString> funcparts)
     return -1;
 }
 
-void MainWindow::funccalculator()
+void MainWindow::funccalculator(int count,const double *xarr, double *yarr)
 {
     vector<QString> partfuncs=funcbreaker();
-    int count = ui->Chp4pointsbox->currentText().toInt();
-    if(Ypoints[1]==Ypoints[0] && Ypoints[0]==0)
+    if(yarr[1]==yarr[0] && yarr[0]==0)
     {
          double variable;
          int darr;
@@ -115,7 +114,7 @@ void MainWindow::funccalculator()
              calculater.compile(function,expression);
              for (int j=0; j<count; j++)
              {
-               variable = Xpoints[j];
+               variable = xarr[j];
                vals.insert(vals.begin()+j,expression.value());
              }
 #pragma omp ordered
@@ -152,7 +151,7 @@ void MainWindow::funccalculator()
          }
          for(int i=0; i<count; i++)
          {
-             Ypoints[i]=computed_vals[0][i];
+             yarr[i]=computed_vals[0][i];
          }
     }
 }
@@ -175,22 +174,27 @@ void MainWindow::on_Ch4StartButton_clicked()
    Ypoints[4]=ui->Ch4y4input->text().toFloat();
    Ypoints[5]=ui->Ch4y5input->text().toFloat();
    Ypoints[6]=ui->Ch4y6input->text().toFloat();
-   funccalculator();
    if(ui->Ch4choicebox->currentText() == "3 Point Mid & End"){
        threepoint();
    }
    else if(ui->Ch4choicebox->currentText() == "5 Point Mid & End"){
        fivepoint();
    }
-   else{
+   else if(ui->Ch4choicebox->currentText() == "Forward Difference")
+   {
        forwarddiff();
+   }
+   else if(ui->Ch4choicebox->currentText() == "Trapezoid")
+   {
+       compositetrapezoidal();
    }
 }
 
 void MainWindow::forwarddiff()
 {
-    double h = Xpoints[1] - Xpoints[0];
     int count = ui->Chp4pointsbox->currentText().toInt();
+    funccalculator(count,Xpoints,Ypoints);
+    double h = Xpoints[1] - Xpoints[0];
     double *answers = new double[count];
     ThreadProofer threads[8];
     double result;
@@ -211,10 +215,13 @@ void MainWindow::forwarddiff()
         ui->Chp4formulalabel->setText(ui->Chp4formulalabel->text() + "\n" + "key value pair: " + QString::number(threads[i].threadid) + " " + QString::number(threads[i].value));
     }
 }
+
 void MainWindow::threepoint()
 {
+    int count = ui->Chp4pointsbox->currentText().toInt();
+    funccalculator(count,Xpoints,Ypoints);
   double h = Xpoints[1] - Xpoints[0];
-  int count = ui->Chp4pointsbox->currentText().toInt();
+
   double *answers = new double[count];
   double q;
   ThreadProofer threads[8];
@@ -276,9 +283,12 @@ void MainWindow::threepoint()
       ui->Chp4formulalabel->setText(ui->Chp4formulalabel->text() + "\n" + "key value pair: " + QString::number(threads[i].threadid) + " " + QString::number(threads[i].value));
   }
 }
-void MainWindow::fivepoint(){
- double height = Xpoints[1] - Xpoints[0];
+
+void MainWindow::fivepoint()
+{
     int count = ui->Chp4pointsbox->currentText().toInt();
+    funccalculator(count,Xpoints,Ypoints);
+    double height = Xpoints[1] - Xpoints[0];
     double *answers = new double[count];
     ThreadProofer threads[8];
     int i=0;
@@ -316,4 +326,40 @@ void MainWindow::fivepoint(){
     {
         ui->Chp4formulalabel->setText(ui->Chp4formulalabel->text() + "\n" + "key value pair: " + " " + QString::number(threads[i].value));
     }
+}
+
+void MainWindow::compositetrapezoidal()
+{
+    double a = Xpoints[0];
+    double b = Xpoints[1];
+
+    double h = Ypoints[0];
+    int count = (b-a)/h;
+    count++;
+    double *xvals = new double[count];
+    xvals[0]=a;
+    double *yvals = new double[count];
+#pragma omp parallel for num_threads(count)
+    for(int i=1; i<count;i++)
+    {
+        xvals[i]=xvals[0]+h*i;
+    }
+    for(int i=0;i<count;i++)
+    {
+        yvals[i]=0;
+    }
+
+    funccalculator(count,xvals,yvals);
+    double ans=0;
+#pragma omp parallel for reduction(+:ans) num_threads(count)
+    for(int i =1; i<count-1;i++)
+    {
+        ans+=2*yvals[i];
+    }
+    ans=ans+yvals[0]+yvals[count-1];
+    ans=ans*(h/2);
+
+    ui->Chp4formulalabel->setText(ui->Chp4formulalabel->text() + "\n" + QString::number(ans));
+
+
 }
