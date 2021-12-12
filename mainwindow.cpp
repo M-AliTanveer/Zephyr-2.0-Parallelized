@@ -160,7 +160,6 @@ void MainWindow::funccalculator()
 void MainWindow::on_Ch4StartButton_clicked()
 {
    ui->Chp4formulalabel->setText("");
-   int count = ui->Chp4pointsbox->currentText().toInt();
    Xpoints[0]=ui->Ch4x0input->text().toFloat();
    Xpoints[1]=ui->Ch4x1input->text().toFloat();
    Xpoints[2]=ui->Ch4x2input->text().toFloat();
@@ -176,15 +175,12 @@ void MainWindow::on_Ch4StartButton_clicked()
    Ypoints[4]=ui->Ch4y4input->text().toFloat();
    Ypoints[5]=ui->Ch4y5input->text().toFloat();
    Ypoints[6]=ui->Ch4y6input->text().toFloat();
-   //forwarddiff();
    funccalculator();
-   //forwarddiff();
-   //3point();
    if(ui->Ch4choicebox->currentText() == "3 Point Mid & End"){
        threepoint();
    }
    else if(ui->Ch4choicebox->currentText() == "5 Point Mid & End"){
-       threepoint();
+       fivepoint();
    }
    else{
        forwarddiff();
@@ -231,7 +227,7 @@ void MainWindow::threepoint()
     {
       if ((i < m1) && (i < m2))
       {
-        answers[i] = (-3*(Ypoints[i])+(4*(Ypoints[i+1]+1))-(Ypoints[i+2]));
+        answers[i] = (-3*(Ypoints[i])+(4*(Ypoints[i+1]))-(Ypoints[i+2]));
         answers[i] = answers[i] / (2*h);
       }
       else if ((i == m1) || (i == m2))
@@ -245,12 +241,14 @@ void MainWindow::threepoint()
         q = h - 2 * h;
         answers[i] = (answers[i]/(2*q));
       }
+      threads[i].threadid=omp_get_thread_num();
+      threads[i].value=answers[i];
     }
   }
   else
   {
     int m = floor(count / 2);
-    #pragma omp parallel for num_threads(8)
+    #pragma omp parallel for num_threads(count)
     for (int i = 0; i < count; i++)
     {
       if (i < m)
@@ -268,13 +266,14 @@ void MainWindow::threepoint()
         answers[i] = (-3 * (Ypoints[i]) + 4 * (Ypoints[i - 1]) - (Ypoints[i - 2]));
         q = h - 2 * h;
         answers[i] = answers[i] / (2 * q);
-        threads[i].value=answers[i];
       }
+      threads[i].threadid=omp_get_thread_num();
+      threads[i].value=answers[i];
     }
   }
   for(int i=0; i<count;i++)
   {
-      ui->Chp4formulalabel->setText(ui->Chp4formulalabel->text() + "\n" + "key value pair: " + " " + QString::number(threads[i].value));
+      ui->Chp4formulalabel->setText(ui->Chp4formulalabel->text() + "\n" + "key value pair: " + QString::number(threads[i].threadid) + " " + QString::number(threads[i].value));
   }
 }
 void MainWindow::fivepoint(){
