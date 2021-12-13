@@ -172,6 +172,7 @@ void MainWindow::funccalculator(int count,const double *xarr, double *yarr)
     }
     file <<"-------Seconds spent: " <<timespent <<"----------\n";
     file <<"------------- Function Calculator Ended-----------------\n";
+    localvaluefile.close();
 
 }
 
@@ -260,11 +261,16 @@ void MainWindow::forwarddiff()
 {
     int count = ui->Chp4pointsbox->currentText().toInt();
     funccalculator(count,Xpoints,Ypoints);
+    QFile localvaluefile("Threadlocals.txt");
+    localvaluefile.open(QIODevice::Append|QIODevice::Text);
+    QTextStream file(&localvaluefile);
+    file <<"\n------------- Forward difference called-----------------\n";
     double h = Xpoints[1] - Xpoints[0];
     double *answers = new double[count];
     ThreadProofer threads[8];
     double result;
-#pragma omp parallel for num_threads(count)
+    auto begin = chrono::high_resolution_clock::now();
+#pragma omp parallel for num_threads(count) if(parallel)
     for(int i=0; i<count;i++)
     {
         if(i!=count-1)
@@ -274,7 +280,14 @@ void MainWindow::forwarddiff()
         threads[i].threadid=omp_get_thread_num();
         answers[i]=answers[i]/h;
         threads[i].value=answers[i];
+#pragma omp critical
+        {file <<"Thread id: " <<omp_get_thread_num() <<" calculated  "<<answers[i] <<" for value"<<Ypoints[i]<<"\n";}
+
     }
+    auto end = chrono::high_resolution_clock::now();
+    double curr=chrono::duration<double, std::milli>(end-begin).count();
+    file <<"-----time spent in forward difference =" <<curr <<"---------\n";
+    file <<"Total time spent: " <<timespent+curr <<"\n";
 
     ui->Chp4DerivTable->setRowCount(count);
     ui->Chp4DerivTable->setColumnCount(3);
@@ -293,6 +306,7 @@ void MainWindow::forwarddiff()
         ui->Chp4DerivTable->setItem(i,2,new QTableWidgetItem(QString::number(threads[i].value)));
     }
     ui->tabWidget->setCurrentIndex(1);
+    localvaluefile.close();
 }
 
 void MainWindow::threepoint()
