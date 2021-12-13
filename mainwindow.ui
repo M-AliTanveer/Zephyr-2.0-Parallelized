@@ -625,6 +625,27 @@
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter the Function f(x):&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
+     <widget class="QCheckBox" name="parallelcheckbox">
+      <property name="geometry">
+       <rect>
+        <x>720</x>
+        <y>450</y>
+        <width>161</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+        <underline>true</underline>
+       </font>
+      </property>
+      <property name="text">
+       <string>Run in Parallel</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="Output_Page">
      <attribute name="title">
@@ -682,6 +703,40 @@
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="showfilebutton">
+      <property name="geometry">
+       <rect>
+        <x>390</x>
+        <y>510</y>
+        <width>151</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>15</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Show Results 
+ of Threads</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="timelabel">
+      <property name="geometry">
+       <rect>
+        <x>50</x>
+        <y>520</y>
+        <width>161</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>TextLabel</string>
       </property>
      </widget>
     </widget>

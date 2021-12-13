@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <QFile>
 #include <vector>
-
+#include <stdlib.h>
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -16,6 +16,9 @@ class MainWindow : public QMainWindow
 public:
     double Xpoints[7];
     double Ypoints[7];
+    double timespent;
+    int parallel=1;
+
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();;
     std::vector<QString> funcbreaker();
@@ -28,7 +31,7 @@ public:
     void simpsonthird();
     void simpsoneight();
     void compmidpoint();
-
+    void showfile();
 
 private slots:
     void on_Ch4StartButton_clicked();

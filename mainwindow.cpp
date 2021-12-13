@@ -3,6 +3,7 @@
 #include <QStack>
 #include "threadproofer.h"
 #include "exprtk.hpp"
+#include <chrono>
 #include <omp.h>
 using namespace std;
 MainWindow::MainWindow(QWidget *parent)
@@ -92,7 +93,10 @@ int MainWindow::gettopop(vector<QString> funcparts)
 
 void MainWindow::funccalculator(int count,const double *xarr, double *yarr)
 {
+    if(QFile::exists("Threadlocals.txt"))
+        QFile::remove("Threadlocals.txt");
     QFile localvaluefile("Threadlocals.txt");
+    parallel=ui->parallelcheckbox->isChecked();
     localvaluefile.open(QIODevice::ReadWrite|QIODevice::Text);
     QTextStream file(&localvaluefile);
     file <<"------------- Function Calculator called-----------------\n";
@@ -104,7 +108,8 @@ void MainWindow::funccalculator(int count,const double *xarr, double *yarr)
          partfuncs.size()%2==0?(darr=partfuncs.size()/2):(darr=partfuncs.size()/2+1);
          vector<vector<double>> computed_vals;
          file <<"Threads created: " <<darr <<"\n";
-#pragma omp parallel num_threads(darr)
+         auto begin = chrono::high_resolution_clock::now();
+#pragma omp parallel num_threads(darr) if(parallel)
     {
          exprtk::symbol_table<double> symbol_table;
          symbol_table.add_variable("x",variable);
@@ -130,6 +135,8 @@ void MainWindow::funccalculator(int count,const double *xarr, double *yarr)
              {computed_vals.insert(computed_vals.begin()+i,vals);}
          }
      }
+         auto end = chrono::high_resolution_clock::now();
+         timespent=chrono::duration<double, std::milli>(end-begin).count();
          for(int i=0; i<darr;i++)
          {
              vector<double> ans;
@@ -163,6 +170,9 @@ void MainWindow::funccalculator(int count,const double *xarr, double *yarr)
              yarr[i]=computed_vals[0][i];
          }
     }
+    file <<"-------Seconds spent: " <<timespent <<"----------\n";
+    file <<"------------- Function Calculator Ended-----------------\n";
+
 }
 
 void MainWindow::on_Ch4choicebox_currentTextChanged(const QString &arg1)
