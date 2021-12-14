@@ -28,3 +28,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 QMAKE_CXXFLAGS += -fopenmp -flto -O3
 LIBS += -fopenmp -fuse-linker-plugin
+
+RESOURCES += \
+    Resources.qrc
+

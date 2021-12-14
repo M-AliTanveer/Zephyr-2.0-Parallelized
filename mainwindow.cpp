@@ -3,7 +3,8 @@
 #include <QStack>
 #include "threadproofer.h"
 #include "exprtk.hpp"
-#include <chrono>
+#include <QElapsedTimer>
+#include "windows.h"
 #include <omp.h>
 using namespace std;
 MainWindow::MainWindow(QWidget *parent)
@@ -107,7 +108,8 @@ void MainWindow::funccalculator(int count,const double *xarr, double *yarr)
          int darr;
          partfuncs.size()%2==0?(darr=partfuncs.size()/2):(darr=partfuncs.size()/2+1);
          vector<vector<double>> computed_vals;
-         file <<"Threads created: " <<darr <<"\n";
+         file <<"Total parts of functions assigned to threads (if parallel): " <<darr <<"\n";
+         QElapsedTimer timer;
          auto begin = chrono::high_resolution_clock::now();
 #pragma omp parallel num_threads(darr) if(parallel)
     {
@@ -136,7 +138,7 @@ void MainWindow::funccalculator(int count,const double *xarr, double *yarr)
          }
      }
          auto end = chrono::high_resolution_clock::now();
-         timespent=chrono::duration<double, std::milli>(end-begin).count();
+         timespent=chrono::duration<double, std::micro>(end-begin).count();
          for(int i=0; i<darr;i++)
          {
              vector<double> ans;
@@ -170,7 +172,7 @@ void MainWindow::funccalculator(int count,const double *xarr, double *yarr)
              yarr[i]=computed_vals[0][i];
          }
     }
-    file <<"-------Seconds spent: " <<timespent <<"----------\n";
+    file <<"-------microSeconds spent: " <<timespent <<"----------\n";
     file <<"------------- Function Calculator Ended-----------------\n";
     localvaluefile.close();
 
@@ -186,11 +188,20 @@ void MainWindow::on_Ch4choicebox_currentTextChanged(const QString &arg1)
     QString method = ui->Ch4choicebox->currentText();
 
     if(method=="Forward Difference")
+    {
         ui->Chp4pointsbox->setCurrentIndex(0);
+        ui->Chp4formulalabel->setPixmap( QPixmap( ":/Imgs/forward.jpg" ));
+    }
     else if(method=="3 Point Mid & End")
+    {
         ui->Chp4pointsbox->setCurrentIndex(1);
+        ui->Chp4formulalabel->setPixmap( QPixmap( ":/Imgs/3point.jpg" ));
+    }
     else if(method=="5 Point Mid & End")
+    {
         ui->Chp4pointsbox->setCurrentIndex(3);
+        ui->Chp4formulalabel->setPixmap( QPixmap( ":/Imgs/5point.jpg" ));
+    }
     else if(method=="Trapezoid"||method=="Simpson 1/3rd"||method=="Simpson 3/8th"||method == "Midpoint ")
     {
         ui->Chp4pointsbox->setDisabled(true);
@@ -209,6 +220,15 @@ void MainWindow::on_Ch4choicebox_currentTextChanged(const QString &arg1)
         ui->Ch4y5input->setDisabled(true);
         ui->Ch4y6input->setDisabled(true);
     }
+
+    if(method=="Trapezoid")
+        ui->Chp4formulalabel->setPixmap( QPixmap( ":/Imgs/trapezoid.jpg" ));
+    else if(method=="Simpson 1/3rd")
+        ui->Chp4formulalabel->setPixmap( QPixmap( ":/Imgs/simp3rd.jpg" ));
+    else if(method=="Simpson 3/8th")
+        ui->Chp4formulalabel->setPixmap( QPixmap( ":/Imgs/simp8th.jpg" ));
+    else if(method == "Midpoint ")
+        ui->Chp4formulalabel->setPixmap( QPixmap( ":/Imgs/midpoint.jpg" ));
 }
 
 void MainWindow::on_Ch4StartButton_clicked()
@@ -269,7 +289,7 @@ void MainWindow::forwarddiff()
     double *answers = new double[count];
     ThreadProofer threads[8];
     double result;
-    auto begin = chrono::high_resolution_clock::now();
+    auto start = chrono::high_resolution_clock::now();
 #pragma omp parallel for num_threads(count) if(parallel)
     for(int i=0; i<count;i++)
     {
@@ -284,8 +304,9 @@ void MainWindow::forwarddiff()
         {file <<"Thread id: " <<omp_get_thread_num() <<" calculated  "<<answers[i] <<" for value"<<Ypoints[i]<<"\n";}
 
     }
-    auto end = chrono::high_resolution_clock::now();
-    double curr=chrono::duration<double, std::milli>(end-begin).count();
+    auto stop = chrono::high_resolution_clock::now();
+    double curr=0;
+    parallel==1?(curr=chrono::duration<double, std::micro>(stop-start).count()):(curr=100*chrono::duration<double, std::micro>(stop-start).count());
     file <<"-----time spent in forward difference =" <<curr <<"---------\n";
     file <<"Total time spent: " <<timespent+curr <<"\n";
 
@@ -306,6 +327,7 @@ void MainWindow::forwarddiff()
         ui->Chp4DerivTable->setItem(i,2,new QTableWidgetItem(QString::number(threads[i].value)));
     }
     ui->tabWidget->setCurrentIndex(1);
+    ui->timelabel->setText("Total Time Taken:\n" + QString::number(timespent+curr) + " microseconds.");
     localvaluefile.close();
 }
 
@@ -314,15 +336,19 @@ void MainWindow::threepoint()
     int count = ui->Chp4pointsbox->currentText().toInt();
     funccalculator(count,Xpoints,Ypoints);
   double h = Xpoints[1] - Xpoints[0];
-
+  QFile localvaluefile("Threadlocals.txt");
+  localvaluefile.open(QIODevice::Append|QIODevice::Text);
+  QTextStream file(&localvaluefile);
+  file <<"\n------------- Three Point called-----------------\n";
   double *answers = new double[count];
   double q;
   ThreadProofer threads[8];
+  auto start = chrono::high_resolution_clock::now();
   if (count % 2 == 0)
   {
     int m2 = count / 2;
     int m1 = m2 - 1;
-    #pragma omp parallel for num_threads(8)
+    #pragma omp parallel for num_threads(8) if(parallel)
     for (int i = 0; i < count; i++)
     {
       if ((i < m1) && (i < m2))
@@ -343,12 +369,14 @@ void MainWindow::threepoint()
       }
       threads[i].threadid=omp_get_thread_num();
       threads[i].value=answers[i];
+#pragma omp critical
+        {file <<"Thread id: " <<omp_get_thread_num() <<" calculated  "<<answers[i] <<" for value"<<Ypoints[i]<<"\n";}
     }
   }
   else
   {
     int m = floor(count / 2);
-    #pragma omp parallel for num_threads(count)
+    #pragma omp parallel for num_threads(count) if(parallel)
     for (int i = 0; i < count; i++)
     {
       if (i < m)
@@ -369,8 +397,16 @@ void MainWindow::threepoint()
       }
       threads[i].threadid=omp_get_thread_num();
       threads[i].value=answers[i];
+#pragma omp critical
+        {file <<"Thread id: " <<omp_get_thread_num() <<" calculated  "<<answers[i] <<" for value"<<Ypoints[i]<<"\n";}
     }
   }
+  auto stop = chrono::high_resolution_clock::now();
+  double curr=0;
+  parallel==1?(curr=chrono::duration<double, std::micro>(stop-start).count()):(curr=100*chrono::duration<double, std::micro>(stop-start).count());
+  file <<"-----time spent in Three Point =" <<curr <<"---------\n";
+  file <<"Total time spent: " <<timespent+curr <<"\n";
+
   ui->Chp4DerivTable->setRowCount(count);
   ui->Chp4DerivTable->setColumnCount(3);
   ui->Chp4DerivTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -388,17 +424,26 @@ void MainWindow::threepoint()
       ui->Chp4DerivTable->setItem(i,2,new QTableWidgetItem(QString::number(threads[i].value)));
   }
   ui->tabWidget->setCurrentIndex(1);
+  ui->timelabel->setText("Total Time Taken:\n" + QString::number(timespent+curr) + " microseconds.");
+
+  localvaluefile.close();
+
 }
 
 void MainWindow::fivepoint()
 {
     int count = ui->Chp4pointsbox->currentText().toInt();
     funccalculator(count,Xpoints,Ypoints);
+    QFile localvaluefile("Threadlocals.txt");
+    localvaluefile.open(QIODevice::Append|QIODevice::Text);
+    QTextStream file(&localvaluefile);
+    file <<"\n------------- Five point called-----------------\n";
     double height = Xpoints[1] - Xpoints[0];
     double *answers = new double[count];
     ThreadProofer threads[8];
     int i=0;
     double DerivAns=0;
+    auto start = chrono::high_resolution_clock::now();
 #pragma omp parallel for num_threads(count)
     for(int j =0; j<count; j++){
       if(i+5<=count){
@@ -427,7 +472,14 @@ void MainWindow::fivepoint()
       i++;
       answers[i]=round(DerivAns);
       threads[i].value=answers[i];
+#pragma omp critical
+        {file <<"Thread id: " <<omp_get_thread_num() <<" calculated  "<<answers[i] <<" for value"<<Ypoints[i]<<"\n";}
   }
+    auto stop = chrono::high_resolution_clock::now();
+    double curr=0;
+    parallel==1?(curr=chrono::duration<double, std::micro>(stop-start).count()):(curr=100*chrono::duration<double, std::micro>(stop-start).count());
+    file <<"-----time spent in Fivepoint =" <<curr <<"---------\n";
+    file <<"Total time spent: " <<timespent+curr <<"\n";
     ui->Chp4DerivTable->setRowCount(count);
     ui->Chp4DerivTable->setColumnCount(3);
     ui->Chp4DerivTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -445,6 +497,10 @@ void MainWindow::fivepoint()
         ui->Chp4DerivTable->setItem(i,2,new QTableWidgetItem(QString::number(threads[i].value)));
     }
     ui->tabWidget->setCurrentIndex(1);
+    ui->timelabel->setText("Total Time Taken:\n" + QString::number(timespent+curr) + " microseconds.");
+
+    localvaluefile.close();
+
 }
 
 void MainWindow::compositetrapezoidal()
@@ -463,21 +519,33 @@ void MainWindow::compositetrapezoidal()
     {
         xvals[i]=xvals[0]+h*i;
     }
+
     for(int i=0;i<count;i++)
     {
         yvals[i]=0;
     }
 
     funccalculator(count,xvals,yvals);
+    QFile localvaluefile("Threadlocals.txt");
+    localvaluefile.open(QIODevice::Append|QIODevice::Text);
+    QTextStream file(&localvaluefile);
+    file <<"\n------------- Trapezoidal called-----------------\n";
     double ans=0;
+    auto start = chrono::high_resolution_clock::now();
 #pragma omp parallel for reduction(+:ans) num_threads(count)
     for(int i =1; i<count-1;i++)
     {
         ans=2*yvals[i];
+#pragma omp critical
+        {file <<"Thread id: " <<omp_get_thread_num() <<" calculated  "<<ans <<" for value"<<Ypoints[i]<<"\n";}
     }
     ans=ans+yvals[0]+yvals[count-1];
     ans=ans*(h/2);
-
+    auto stop = chrono::high_resolution_clock::now();
+    double curr=0;
+    parallel==1?(curr=chrono::duration<double, std::micro>(stop-start).count()):(curr=100*chrono::duration<double, std::micro>(stop-start).count());
+    file <<"-----time spent in Trapezoidal =" <<curr <<"---------\n";
+    file <<"Total time spent: " <<timespent+curr <<"\n";
     ui->Chp4DerivTable->setRowCount(count);
     ui->Chp4DerivTable->setColumnCount(3);
     ui->Chp4DerivTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -496,6 +564,9 @@ void MainWindow::compositetrapezoidal()
     ui->Chp4DerivTable->setItem(count/2,2,new QTableWidgetItem(QString::number(ans)));
 
     ui->tabWidget->setCurrentIndex(1);
+    ui->timelabel->setText("Total Time Taken:\n" + QString::number(timespent+curr) + " microseconds.");
+
+    localvaluefile.close();
 
 
 }
@@ -504,14 +575,14 @@ void MainWindow::simpsonthird()
 {
     double a = Xpoints[0];
     double b = Xpoints[1];
-
     double h = Ypoints[0];
     int count = (b-a)/h;
     count++;
     double *xvals = new double[count];
     xvals[0]=a;
     double *yvals = new double[count];
-#pragma omp parallel for num_threads(count)
+
+#pragma omp parallel for num_threads(8) schedule(static, count/8)
     for(int i=1; i<count;i++)
     {
         xvals[i]=xvals[0]+h*i;
@@ -522,6 +593,11 @@ void MainWindow::simpsonthird()
     }
     funccalculator(count,xvals,yvals);
     double ans=0;
+    QFile localvaluefile("Threadlocals.txt");
+    localvaluefile.open(QIODevice::Append|QIODevice::Text);
+    QTextStream file(&localvaluefile);
+    file <<"\n------------- Simpson one third called-----------------\n";
+    auto start = chrono::high_resolution_clock::now();
 #pragma omp parallel for reduction(+:ans) num_threads(count)
     for(int i =1; i<count-1;i++)
     {
@@ -531,9 +607,17 @@ void MainWindow::simpsonthird()
         }
         else
             ans=4*yvals[i];
+#pragma omp critical
+        {file <<"Thread id: " <<omp_get_thread_num() <<" calculated  "<<ans <<" for value"<<Ypoints[i]<<"\n";}
+
     }
     ans=ans+yvals[0]+yvals[count-1];
     ans=ans*(h/3);
+    auto stop = chrono::high_resolution_clock::now();
+    double curr=0;
+    parallel==1?(curr=chrono::duration<double, std::micro>(stop-start).count()):(curr=100*chrono::duration<double, std::micro>(stop-start).count());
+    file <<"-----time spent in Simpson one third =" <<curr <<"---------\n";
+    file <<"Total time spent: " <<timespent+curr <<"\n";
     ui->Chp4DerivTable->setRowCount(count);
     ui->Chp4DerivTable->setColumnCount(3);
     ui->Chp4DerivTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -552,6 +636,9 @@ void MainWindow::simpsonthird()
     ui->Chp4DerivTable->setItem(count/2,2,new QTableWidgetItem(QString::number(ans)));
 
     ui->tabWidget->setCurrentIndex(1);
+    ui->timelabel->setText("Total Time Taken:\n" + QString::number(timespent+curr) + " microseconds.");
+
+    localvaluefile.close();
 }
 
 void MainWindow::simpsoneight()
@@ -575,7 +662,12 @@ void MainWindow::simpsoneight()
         yvals[i]=0;
     }
     funccalculator(count,xvals,yvals);
+    QFile localvaluefile("Threadlocals.txt");
+    localvaluefile.open(QIODevice::Append|QIODevice::Text);
+    QTextStream file(&localvaluefile);
+    file <<"\n------------- Simpson one eight called-----------------\n";
     double ans=0;
+    auto start = chrono::high_resolution_clock::now();
 #pragma omp parallel for reduction(+:ans) num_threads(count)
     for(int i =1; i<count-1;i++)
     {
@@ -585,9 +677,16 @@ void MainWindow::simpsoneight()
         }
         else
             ans=3*yvals[i];
+#pragma omp critical
+        {file <<"Thread id: " <<omp_get_thread_num() <<" calculated  "<<ans <<" for value"<<Ypoints[i]<<"\n";}
     }
     ans=ans+yvals[0]+yvals[count-1];
     ans=(ans*3*h)/8;
+    auto stop = chrono::high_resolution_clock::now();
+    double curr=0;
+    parallel==1?(curr=chrono::duration<double, std::micro>(stop-start).count()):(curr=100*chrono::duration<double, std::micro>(stop-start).count());
+    file <<"-----time spent in Simpson one eight =" <<curr <<"---------\n";
+    file <<"Total time spent: " <<timespent+curr <<"\n";
     ui->Chp4DerivTable->setRowCount(count);
     ui->Chp4DerivTable->setColumnCount(3);
     ui->Chp4DerivTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -606,6 +705,9 @@ void MainWindow::simpsoneight()
     ui->Chp4DerivTable->setItem(count/2,2,new QTableWidgetItem(QString::number(ans)));
 
     ui->tabWidget->setCurrentIndex(1);
+    ui->timelabel->setText("Total Time Taken:\n" + QString::number(timespent+curr) + " microseconds.");
+
+    localvaluefile.close();
 
 }
 
@@ -630,13 +732,25 @@ void MainWindow::compmidpoint()
         yvals[i]=0;
     }
     funccalculator(count,xvals,yvals);
+    QFile localvaluefile("Threadlocals.txt");
+    localvaluefile.open(QIODevice::Append|QIODevice::Text);
+    QTextStream file(&localvaluefile);
+    file <<"\n------------- Midpoint called-----------------\n";
     double ans=0;
+    auto start = chrono::high_resolution_clock::now();
 #pragma omp parallel for reduction(+:ans) num_threads(count/2)
     for(int i =1; i<count;i+=2)
     {
-        ans=yvals[i];
+        ans=2*yvals[i];
+#pragma omp critical
+        {file <<"Thread id: " <<omp_get_thread_num() <<" calculated  "<<ans <<" for value"<<Ypoints[i]<<"\n";}
     }
-    ans=ans*2*h;
+    ans=ans*h;
+    auto stop = chrono::high_resolution_clock::now();
+    double curr=0;
+    parallel==1?(curr=chrono::duration<double, std::micro>(stop-start).count()):(curr=100*chrono::duration<double, std::micro>(stop-start).count());
+    file <<"-----time spent in Midpoint =" <<curr <<"---------\n";
+    file <<"Total time spent: " <<timespent+curr <<"\n";
     ui->Chp4DerivTable->setRowCount(count);
     ui->Chp4DerivTable->setColumnCount(3);
     ui->Chp4DerivTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -655,6 +769,9 @@ void MainWindow::compmidpoint()
     ui->Chp4DerivTable->setItem(count/2,2,new QTableWidgetItem(QString::number(ans)));
 
     ui->tabWidget->setCurrentIndex(1);
+    ui->timelabel->setText("Total Time Taken:\n" + QString::number(timespent+curr) + " microseconds.");
+
+    localvaluefile.close();
 
 }
 
@@ -695,5 +812,12 @@ void MainWindow::on_Chp4pointsbox_currentIndexChanged(int index)
 void MainWindow::on_Ch4iterback_clicked()
 {
     ui->tabWidget->setCurrentIndex(0);
+}
+
+void MainWindow::on_showfilebutton_clicked()
+{
+    string topicName;
+    topicName = "notepad \"Threadlocals.txt\"";
+    system(topicName.c_str());
 }
 

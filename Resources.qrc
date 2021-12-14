@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/Imgs">
+        <file>proc.jpg</file>
+        <file>3point.JPG</file>
+        <file>5point.JPG</file>
+        <file>forward.JPG</file>
+        <file>midpoint.JPG</file>
+        <file>simp3rd.JPG</file>
+        <file>simp8th.JPG</file>
+        <file>trapezoid.JPG</file>
+    </qresource>
+</RCC>

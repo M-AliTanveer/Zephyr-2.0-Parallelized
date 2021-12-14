@@ -31,7 +31,6 @@ public:
     void simpsonthird();
     void simpsoneight();
     void compmidpoint();
-    void showfile();
 
 private slots:
     void on_Ch4StartButton_clicked();
@@ -40,6 +39,8 @@ private slots:
     void on_Chp4pointsbox_currentIndexChanged(int index);
 
     void on_Ch4iterback_clicked();
+
+    void on_showfilebutton_clicked();
 
 private:
     Ui::MainWindow *ui;
