@@ -190,17 +190,17 @@ void MainWindow::on_Ch4choicebox_currentTextChanged(const QString &arg1)
     if(method=="Forward Difference")
     {
         ui->Chp4pointsbox->setCurrentIndex(0);
-        ui->Chp4formulalabel->setPixmap( QPixmap( ":/Imgs/forward.jpg" ));
+        ui->Chp4formulalabel->setPixmap( QPixmap(QString::fromUtf8( ":/Imgs/forward.JPG" )));
     }
     else if(method=="3 Point Mid & End")
     {
         ui->Chp4pointsbox->setCurrentIndex(1);
-        ui->Chp4formulalabel->setPixmap( QPixmap( ":/Imgs/3point.jpg" ));
+        ui->Chp4formulalabel->setPixmap( QPixmap(QString::fromUtf8( ":/Imgs/3point.JPG" )));
     }
     else if(method=="5 Point Mid & End")
     {
         ui->Chp4pointsbox->setCurrentIndex(3);
-        ui->Chp4formulalabel->setPixmap( QPixmap( ":/Imgs/5point.jpg" ));
+        ui->Chp4formulalabel->setPixmap( QPixmap(QString::fromUtf8( ":/Imgs/5point.JPG" )));
     }
     else if(method=="Trapezoid"||method=="Simpson 1/3rd"||method=="Simpson 3/8th"||method == "Midpoint ")
     {
@@ -222,13 +222,13 @@ void MainWindow::on_Ch4choicebox_currentTextChanged(const QString &arg1)
     }
 
     if(method=="Trapezoid")
-        ui->Chp4formulalabel->setPixmap( QPixmap( ":/Imgs/trapezoid.jpg" ));
+        ui->Chp4formulalabel->setPixmap( QPixmap(QString::fromUtf8( ":/Imgs/trapezoid.JPG" )));
     else if(method=="Simpson 1/3rd")
-        ui->Chp4formulalabel->setPixmap( QPixmap( ":/Imgs/simp3rd.jpg" ));
+        ui->Chp4formulalabel->setPixmap( QPixmap(QString::fromUtf8( ":/Imgs/simp3rd.JPG" )));
     else if(method=="Simpson 3/8th")
-        ui->Chp4formulalabel->setPixmap( QPixmap( ":/Imgs/simp8th.jpg" ));
+        ui->Chp4formulalabel->setPixmap( QPixmap(QString::fromUtf8( ":/Imgs/simp8th.JPG" )));
     else if(method == "Midpoint ")
-        ui->Chp4formulalabel->setPixmap( QPixmap( ":/Imgs/midpoint.jpg" ));
+        ui->Chp4formulalabel->setPixmap( QPixmap(QString::fromUtf8( ":/Imgs/midpoint.JPG" )));
 }
 
 void MainWindow::on_Ch4StartButton_clicked()
