@@ -745,9 +745,16 @@ color: white;
        <rect>
         <x>50</x>
         <y>520</y>
-        <width>161</width>
+        <width>221</width>
         <height>41</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>11</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
       </property>
       <property name="text">
        <string>TextLabel</string>

@@ -249,6 +249,12 @@ void MainWindow::on_Ch4StartButton_clicked()
    Ypoints[4]=ui->Ch4y4input->text().toFloat();
    Ypoints[5]=ui->Ch4y5input->text().toFloat();
    Ypoints[6]=ui->Ch4y6input->text().toFloat();
+
+   for(int i=0; i<ui->Chp4DerivTable->rowCount();i++)
+   {
+       ui->Chp4DerivTable->setItem(i,2,new QTableWidgetItem(""));
+   }
+
    if(ui->Ch4choicebox->currentText() == "3 Point Mid & End"){
        threepoint();
    }
@@ -329,6 +335,7 @@ void MainWindow::forwarddiff()
     ui->tabWidget->setCurrentIndex(1);
     ui->timelabel->setText("Total Time Taken:\n" + QString::number(timespent+curr) + " microseconds.");
     localvaluefile.close();
+
 }
 
 void MainWindow::threepoint()
@@ -514,7 +521,7 @@ void MainWindow::compositetrapezoidal()
     double *xvals = new double[count];
     xvals[0]=a;
     double *yvals = new double[count];
-#pragma omp parallel for num_threads(count)
+#pragma omp parallel for num_threads(8)
     for(int i=1; i<count;i++)
     {
         xvals[i]=xvals[0]+h*i;
@@ -537,7 +544,7 @@ void MainWindow::compositetrapezoidal()
     {
         ans=2*yvals[i];
 #pragma omp critical
-        {file <<"Thread id: " <<omp_get_thread_num() <<" calculated  "<<ans <<" for value"<<Ypoints[i]<<"\n";}
+        {file <<"Thread id: " <<omp_get_thread_num() <<" calculated  "<<ans <<" for value"<<yvals[i]<<"\n";}
     }
     ans=ans+yvals[0]+yvals[count-1];
     ans=ans*(h/2);
@@ -561,7 +568,7 @@ void MainWindow::compositetrapezoidal()
         ui->Chp4DerivTable->setItem(i,0,new QTableWidgetItem(QString::number(xvals[i])));
         ui->Chp4DerivTable->setItem(i,1,new QTableWidgetItem(QString::number(yvals[i])));
     }
-    ui->Chp4DerivTable->setItem(count/2,2,new QTableWidgetItem(QString::number(ans)));
+    ui->Chp4DerivTable->setItem(0,2,new QTableWidgetItem(QString::number(ans)));
 
     ui->tabWidget->setCurrentIndex(1);
     ui->timelabel->setText("Total Time Taken:\n" + QString::number(timespent+curr) + " microseconds.");
@@ -608,7 +615,7 @@ void MainWindow::simpsonthird()
         else
             ans=4*yvals[i];
 #pragma omp critical
-        {file <<"Thread id: " <<omp_get_thread_num() <<" calculated  "<<ans <<" for value"<<Ypoints[i]<<"\n";}
+        {file <<"Thread id: " <<omp_get_thread_num() <<" calculated  "<<ans <<" for value"<<yvals[i]<<"\n";}
 
     }
     ans=ans+yvals[0]+yvals[count-1];
@@ -633,7 +640,7 @@ void MainWindow::simpsonthird()
         ui->Chp4DerivTable->setItem(i,0,new QTableWidgetItem(QString::number(xvals[i])));
         ui->Chp4DerivTable->setItem(i,1,new QTableWidgetItem(QString::number(yvals[i])));
     }
-    ui->Chp4DerivTable->setItem(count/2,2,new QTableWidgetItem(QString::number(ans)));
+    ui->Chp4DerivTable->setItem(0,2,new QTableWidgetItem(QString::number(ans)));
 
     ui->tabWidget->setCurrentIndex(1);
     ui->timelabel->setText("Total Time Taken:\n" + QString::number(timespent+curr) + " microseconds.");
@@ -652,7 +659,7 @@ void MainWindow::simpsoneight()
     double *xvals = new double[count];
     xvals[0]=a;
     double *yvals = new double[count];
-#pragma omp parallel for num_threads(count)
+#pragma omp parallel for num_threads(8)
     for(int i=1; i<count;i++)
     {
         xvals[i]=xvals[0]+h*i;
@@ -678,7 +685,7 @@ void MainWindow::simpsoneight()
         else
             ans=3*yvals[i];
 #pragma omp critical
-        {file <<"Thread id: " <<omp_get_thread_num() <<" calculated  "<<ans <<" for value"<<Ypoints[i]<<"\n";}
+        {file <<"Thread id: " <<omp_get_thread_num() <<" calculated  "<<ans <<" for value"<<yvals[i]<<"\n";}
     }
     ans=ans+yvals[0]+yvals[count-1];
     ans=(ans*3*h)/8;
@@ -702,7 +709,7 @@ void MainWindow::simpsoneight()
         ui->Chp4DerivTable->setItem(i,0,new QTableWidgetItem(QString::number(xvals[i])));
         ui->Chp4DerivTable->setItem(i,1,new QTableWidgetItem(QString::number(yvals[i])));
     }
-    ui->Chp4DerivTable->setItem(count/2,2,new QTableWidgetItem(QString::number(ans)));
+    ui->Chp4DerivTable->setItem(0,2,new QTableWidgetItem(QString::number(ans)));
 
     ui->tabWidget->setCurrentIndex(1);
     ui->timelabel->setText("Total Time Taken:\n" + QString::number(timespent+curr) + " microseconds.");
@@ -722,7 +729,7 @@ void MainWindow::compmidpoint()
     double *xvals = new double[count];
     xvals[0]=a;
     double *yvals = new double[count];
-#pragma omp parallel for num_threads(count)
+#pragma omp parallel for num_threads(8)
     for(int i=1; i<count;i++)
     {
         xvals[i]=xvals[0]+h*i;
@@ -743,7 +750,7 @@ void MainWindow::compmidpoint()
     {
         ans=2*yvals[i];
 #pragma omp critical
-        {file <<"Thread id: " <<omp_get_thread_num() <<" calculated  "<<ans <<" for value"<<Ypoints[i]<<"\n";}
+        {file <<"Thread id: " <<omp_get_thread_num() <<" calculated  "<<ans <<" for value"<<yvals[i]<<"\n";}
     }
     ans=ans*h;
     auto stop = chrono::high_resolution_clock::now();
@@ -766,7 +773,7 @@ void MainWindow::compmidpoint()
         ui->Chp4DerivTable->setItem(i,0,new QTableWidgetItem(QString::number(xvals[i])));
         ui->Chp4DerivTable->setItem(i,1,new QTableWidgetItem(QString::number(yvals[i])));
     }
-    ui->Chp4DerivTable->setItem(count/2,2,new QTableWidgetItem(QString::number(ans)));
+    ui->Chp4DerivTable->setItem(0,2,new QTableWidgetItem(QString::number(ans)));
 
     ui->tabWidget->setCurrentIndex(1);
     ui->timelabel->setText("Total Time Taken:\n" + QString::number(timespent+curr) + " microseconds.");

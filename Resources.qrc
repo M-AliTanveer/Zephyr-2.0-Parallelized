@@ -8,5 +8,7 @@
         <file>simp3rd.JPG</file>
         <file>simp8th.JPG</file>
         <file>trapezoid.JPG</file>
+        <file>proc1.jpg</file>
     </qresource>
+    <qresource prefix="/"/>
 </RCC>
