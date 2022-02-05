@@ -20,5 +20,8 @@ This is a GUI-based Parallel program developed completely in C++ with the use of
 2. QT Framework
 3. OpenMP
 4. <a href="https://github.com/ArashPartow/exprtk">ExprtK Mathematical Expression Library</a>
+
+
+Note: Version 1 built on Python is availabel <a href"https://github.com/Fawad-Javed-Fateh/Zephyr-I">here</a>
  
  
