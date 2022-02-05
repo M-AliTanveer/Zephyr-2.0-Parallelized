@@ -22,6 +22,6 @@ This is a GUI-based Parallel program developed completely in C++ with the use of
 4. <a href="https://github.com/ArashPartow/exprtk">ExprtK Mathematical Expression Library</a>
 
 
-Note: Version 1 built on Python is availabel <a href"https://github.com/Fawad-Javed-Fateh/Zephyr-I">here</a>
+Note: Version 1 built on Python is availabel <a href="https://github.com/Fawad-Javed-Fateh/Zephyr-I">here</a>
  
  
